@@ -1,6 +1,10 @@
 <?php
-
 namespace App\Controllers\Kas;
+
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
+
 
 use App\Controllers\BaseController;
 use App\Models\UangKasModel;
@@ -16,6 +20,9 @@ class KasController extends BaseController
 {
     protected $uangModel;
     protected $transaksiModel;
+    protected $kategoriModel;
+    protected $db;
+
 
     public function __construct()
     {
@@ -30,6 +37,9 @@ class KasController extends BaseController
         $this->tagModel = new TagModel();
 
         $this->kategoriModel = new KategoriModel();
+
+        $this->db = \Config\Database::connect();
+        helper(['text', 'pdf']);
     }
 
     public function editKas($kode_kas)
@@ -428,9 +438,151 @@ class KasController extends BaseController
         return redirect()->to(base_url('kas/kategori'));
     }
 
+    public function getPDF()
+    {
+        // 1. Ekstrak data tanggal, waktu, hari, jam, saat ini
+        $now = date('d-m-Y H:i:s');
+        $hariIni = date('l'); // Full day name (e.g., Monday)
+        $jamSaatIni = date('H:i');
+
+        // Terjemahkan nama hari ke Bahasa Indonesia (opsional)
+        $namaHari = [
+            'Sunday' => 'Minggu', 'Monday' => 'Senin', 'Tuesday' => 'Selasa',
+            'Wednesday' => 'Rabu', 'Thursday' => 'Kamis', 'Friday' => 'Jumat',
+            'Saturday' => 'Sabtu'
+        ];
+        $hariIndonesia = $namaHari[$hariIni];
+
+        // 2. Jumlah uang kas saat ini
+        $uangKas = $this->uangModel->first();
+        $jumlahKas = $uangKas ? intval($uangKas['jumlah']) : 0;
+
+        // 3. Semua data rekap transaksi
+        $semuaTransaksi = $this->transaksiModel->orderBy('tanggal', 'DESC')->findAll();
+
+        // 4. Hitung total pemasukan dan pengeluaran per kategori
+        $totalPemasukan = 0;
+        $totalPengeluaran = 0;
+        $kategoriPemasukan = [];
+        $kategoriPengeluaran = [];
+
+        foreach ($semuaTransaksi as $t) {
+            $jumlah = intval($t['jumlah']);
+            if ($t['jenis'] == 'pemasukan') {
+                $totalPemasukan += $jumlah;
+                if (!isset($kategoriPemasukan[$t['kategori']])) {
+                    $kategoriPemasukan[$t['kategori']] = 0;
+                }
+                $kategoriPemasukan[$t['kategori']] += $jumlah;
+            } else {
+                $totalPengeluaran += $jumlah;
+                if (!isset($kategoriPengeluaran[$t['kategori']])) {
+                    $kategoriPengeluaran[$t['kategori']] = 0;
+                }
+                $kategoriPengeluaran[$t['kategori']] += $jumlah;
+            }
+        }
+
+        $data = [
+            'tanggal_sekarang' => $now,
+            'hari_ini' => $hariIndonesia,
+            'jam_saat_ini' => $jamSaatIni,
+            'jumlah_kas' => $jumlahKas,
+            'semua_transaksi' => $semuaTransaksi,
+            'total_pemasukan_keseluruhan' => $totalPemasukan, // Tambah ini
+            'total_pengeluaran_keseluruhan' => $totalPengeluaran, // Tambah ini
+            'kategori_pemasukan' => $kategoriPemasukan,
+            'kategori_pengeluaran' => $kategoriPengeluaran,
+            'title' => 'Laporan Kas Lengkap', // Judul untuk PDF
+        ];
+
+        // Load view yang akan di-render sebagai HTML untuk PDF
+        $html = view('laporan/pdf_laporan_lengkap', $data); // Buat view ini
+
+        // Panggil helper untuk generate dan download PDF
+        generate_pdf($html, 'Laporan_Kas_Lengkap_' . date('Ymd_His') . '.pdf');
+    }
+
+    public function getCSV() // Atau public function getCSV()
+    {
+        // 1. Ambil semua data transaksi (tetap ASC untuk urutan kronologis)
+        $semuaTransaksi = $this->transaksiModel->orderBy('tanggal', 'ASC')->findAll();
+
+        // 2. Ambil uang kas saat ini (nilai final dari database, sekali saja)
+        $uangKasDB = $this->uangModel->first();
+        $jumlahKasFinal = $uangKasDB ? intval($uangKasDB['jumlah']) : 0;
+
+        // 3. Siapkan header CSV (baris pertama)
+        $header = [
+            'No',
+            'Tanggal',
+            'Hari',
+            'Kategori',
+            'Jumlah',
+            'Jenis',
+            'Keterangan',
+        ];
+
+        // 4. Siapkan data CSV
+        $data_csv = [];
+        $data_csv[] = $header; // Tambahkan header sebagai baris pertama
+
+        $namaHari = [
+            'Sun' => 'Minggu', 'Mon' => 'Senin', 'Tue' => 'Selasa',
+            'Wed' => 'Rabu', 'Thu' => 'Kamis', 'Fri' => 'Jumat',
+            'Sat' => 'Sabtu'
+        ];
+
+        $no = 1;
+        foreach ($semuaTransaksi as $t) {
+            $tanggalObj = strtotime($t['tanggal']);
+            $hariSingkat = date('D', $tanggalObj);
+            $hariLengkap = $namaHari[$hariSingkat]; // Ambil nama hari dalam Bahasa Indonesia
+
+            $row = [
+                $no++,
+                date('d-m-Y', $tanggalObj),
+                $hariLengkap,
+                ucfirst($t['kategori']),
+                intval($t['jumlah']), // Biarkan sebagai angka
+                ucfirst($t['jenis']),
+                $t['keterangan'] ?? '-',
+            ];
+            $data_csv[] = $row;
+        }
+
+        // Opsional: Tambahkan baris ringkasan di akhir CSV (seperti di PDF)
+        // Ini akan sangat membantu user saat membuka di spreadsheet
+        $totalPemasukan = 0;
+        $totalPengeluaran = 0;
+        foreach ($semuaTransaksi as $t) {
+            if ($t['jenis'] == 'pemasukan') {
+                $totalPemasukan += intval($t['jumlah']);
+            } else {
+                $totalPengeluaran += intval($t['jumlah']);
+            }
+        }
+
+        $data_csv[] = ['', '', '', 'TOTAL PEMASUKAN', $totalPemasukan, '', '', ''];
+        $data_csv[] = ['', '', '', 'TOTAL PENGELUARAN', $totalPengeluaran, '', '', ''];
+        $data_csv[] = ['', '', '', 'SALDO AKHIR', $jumlahKasFinal, '', '', ''];
 
 
+        // 5. Siapkan header HTTP untuk unduhan CSV
+        $filename = 'Laporan_Kas_Lengkap_' . date('Ymd_His') . '.csv';
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
 
+        // 6. Buat output CSV
+        $output = fopen('php://output', 'w'); // Buka output stream
+
+        foreach ($data_csv as $row) {
+            fputcsv($output, $row); // Tulis setiap baris ke CSV
+        }
+
+        fclose($output); // Tutup output stream
+        exit(); // Hentikan eksekusi script setelah mengirim file
+    }
 
 
 

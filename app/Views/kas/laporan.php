@@ -31,7 +31,8 @@
     <link href="/assets/backend/css/themes/dark.css" class="theme-color" rel="stylesheet" />
     <link href="/assets/backend/css/custom.css" rel="stylesheet" />
     <link href="/assets/backend/css/dropify.min.css" rel="stylesheet" />
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    
     <style>
         html, body {
             height: 900%;
@@ -137,25 +138,29 @@
                                                     <td><?= date('d-m-Y', strtotime($t['tanggal'])); ?></td>
                                                     <td><?= ucfirst($t['kategori']); ?></td>
                                                     <td>Rp <?= number_format($t['jumlah'], 0, ',', '.'); ?></td>
-                                                    <td><?= $t['keterangan'] ?? '-'; ?></td>
+                                                    <td> <?= ucfirst($t['jenis']); ?></td>
                                                 </tr>
                                                 <?php endforeach; ?>
                                             </tbody>
 
                                     </table>
-
-                                    <div class="d-flex justify-content-end gap-2 mt-3">
-                                        <a href="<?= base_url('transaksi/export_csv'); ?>   " class="btn btn-outline-success">
-                                            <i class="bi bi-file-earmark-spreadsheet"></i> Export to CSV
-                                        </a>
-                                        <a href="<?= base_url('transaksi/export_pdf'); ?>" class="btn btn-outline-danger">
-                                            <i class="bi bi-file-earmark-pdf"></i> Export to PDF
-                                        </a>
-                                    </div>
                                     <!-- Pagination -->
                                     <nav>
                                         <?= $pager->links('transaksi', 'bootstrap'); ?>
                                     </nav>
+                                
+                                   <div class="d-flex flex-row justify-content-between align-items-center mt-3" style="display: flex; flex-direction: row; justify-content: start; align-items: center; gap: 4rem; padding-bottom: 2rem;">
+                                        <form action="<?= base_url('kas/laporan/csv'); ?>" method="get">
+                                            <button type="submit" class="btn btn-success text-white fw-bold" style="font-size: 1.3rem; padding: 0.75rem 1.5rem;">
+                                                <i class="bi bi-file-earmark-spreadsheet"></i> Export to CSV
+                                            </button>
+                                        </form>
+                                        <form action="<?= base_url('kas/laporan/pdf'); ?>" method="get">
+                                            <button type="submit" class="btn btn-danger text-white fw-bold" style="font-size: 1.3rem; padding: 0.75rem 1.5rem;">
+                                                <i class="bi bi-file-earmark-pdf"></i> Export to PDF
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
 
@@ -179,7 +184,7 @@
                 labels: ['Pemasukan', 'Pengeluaran'],
                 datasets: [{
                     label: 'Jumlah (Rp)',
-                    data: [1250000, 600000],
+                    data: [<?= $total_pemasukan; ?>, <?= $total_pengeluaran; ?>],
                     backgroundColor: ['#A8D5BA', '#F5A9A9']
                 }]
             },
@@ -197,9 +202,9 @@
         new Chart(ctxKategori, {
             type: 'pie',
             data: {
-                labels: ['Donasi', 'Penjualan', 'Sponsor', 'Lain-lain'],
+                labels: <?= $kategori_labels ?>,
                 datasets: [{
-                    data: [300000, 500000, 200000, 250000],
+                    data: <?= $kategori_data ?>,
                     backgroundColor: ['#A9CFE7', '#FFF3B0', '#C8BFE7', '#FAD6BF']
                 }]
             },
