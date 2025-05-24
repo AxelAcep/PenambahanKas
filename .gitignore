@@ -1,0 +1,28 @@
+# Composer vendor directory
+/vendor/
+
+# Environment file
+.env
+
+# IDE/editor settings
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# CI4 writable directory (should not be versioned)
+writable/cache/
+writable/debugbar/
+writable/logs/
+writable/session/
+writable/uploads/
+
+# PHPUnit test results
+.phpunit.result.cache
+
+# Node modules (if using front-end tools)
+node_modules/
