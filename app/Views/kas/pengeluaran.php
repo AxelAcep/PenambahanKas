@@ -88,13 +88,13 @@
                                     <form id="form-kurang-kas" class="form-inline" method="post" action="/kas/kurang/data">
                                         <?= csrf_field(); ?>
                                         <div class="row">
-                                            <div class="col-md-2 form-group" style="margin-bottom: 15px;">
+                                            <div class="col-md-3 form-group" style="margin-bottom: 15px;">
                                                 <label for="jumlah">Jumlah</label>
                                                 <input type="number" class="form-control" id="jumlah" name="jumlah" placeholder="Masukkan jumlah" required />
                                             </div>
-                                            <div class="col-md-3 form-group" style="margin-bottom: 15px; padding-left: 5px;">
+                                            <div class="col-md-3 form-group" style="margin-bottom: 15px;">
                                                 <label for="kategori">Keterangan</label>
-                                                <input type="text" class="form-control" id="kategori" name="kategori" placeholder="Masukkan kategori" required>
+                                                <input type="text" class="form-control" id="kategori" name="kategori" placeholder="Masukkan Keterangan" required>
                                             </div>
                                         </div>
                                         <button type="submit" class="btn btn-success">kurang Kas</button>
@@ -114,10 +114,10 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="body-table">
-                                                <?php if (!empty($kas_pengeluaran)): ?>
+                                                <?php $no = 1; ?> <?php if (!empty($kas_pengeluaran)): ?>
                                                     <?php foreach ($kas_pengeluaran as $kas): ?>
                                                         <tr>
-                                                            <td><?= $kas['kode_kas']; ?></td>
+                                                            <td><?= $no++; ?></td>
                                                             <td><?= $kas['kategori']; ?></td>
                                                             <td><?= number_format($kas['jumlah']); ?></td>
                                                             <td><?= date('d-m-Y', strtotime($kas['tanggal'])); ?></td>
