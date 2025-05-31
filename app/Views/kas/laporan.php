@@ -96,7 +96,7 @@
                             </div>
 
                             <!-- Chart Section -->
-                            <div class="row mb-4">
+                            <div class="row mb-4 justify-content-center align-items-center" style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
                                 <div class="col-md-6">
                                     <div class="card border-success">
                                         <div class="card-header">Perbandingan Pemasukan vs Pengeluaran</div>
@@ -106,9 +106,9 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <div class="card border-success">
-                                        <div class="card-header">Pemasukan Berdasarkan Kategori</div>
+                                        <div class="card-header">Pengeluaran Berdasarkan Kategori</div>
                                         <div class="card-body">
                                             <canvas id="chart-kategori" height="200"></canvas>
                                         </div>
@@ -176,6 +176,24 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/assets/backend/plugins/jquery/jquery-2.1.4.min.js"></script>
+    <script src="/assets/backend/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script src="/assets/backend/plugins/pace-master/pace.min.js"></script>
+    <script src="/assets/backend/plugins/jquery-blockui/jquery.blockui.js"></script>
+    <script src="/assets/backend/plugins/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/assets/backend/plugins/jquery-slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="/assets/backend/plugins/switchery/switchery.min.js"></script>
+    <script src="/assets/backend/plugins/uniform/jquery.uniform.min.js"></script>
+    <script src="/assets/backend/plugins/classie/classie.js"></script>
+    <script src="/assets/backend/plugins/3d-bold-navigation/js/main.js"></script>
+    <script src="/assets/backend/plugins/waves/waves.min.js"></script>
+    <script src="/assets/backend/plugins/waypoints/jquery.waypoints.min.js"></script>
+    <script src="/assets/backend/plugins/jquery-counterup/jquery.counterup.min.js"></script>
+    <script src="/assets/backend/plugins/toastr/jquery.toast.min.js"></script>
+    <script src="/assets/backend/plugins/datatables/js/jquery.datatables.min.js"></script>
+    <script src="/assets/backend/js/modern.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
         const ctxPerbandingan = document.getElementById('chart-perbandingan').getContext('2d');
         new Chart(ctxPerbandingan, {

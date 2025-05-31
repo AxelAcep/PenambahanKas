@@ -15,6 +15,8 @@ use App\Models\CommentModel;
 use App\Models\InboxModel;
 use App\Models\PostModel;
 use App\Models\TagModel;
+use App\Models\KasModel;
+use App\Models\userModel;
 
 class KasController extends BaseController
 {
@@ -22,10 +24,12 @@ class KasController extends BaseController
     protected $transaksiModel;
     protected $kategoriModel;
     protected $db;
-
+    protected $kasModel;
+    protected $userModel;
 
     public function __construct()
     {
+        $this->kasModel = new KasModel();
         $this->uangModel = new UangKasModel();
         $this->transaksiModel = new TransaksiKasModel();
         
@@ -37,6 +41,8 @@ class KasController extends BaseController
         $this->tagModel = new TagModel();
 
         $this->kategoriModel = new KategoriModel();
+
+        $this->userModel = new userModel();
 
         $this->db = \Config\Database::connect();
         helper(['text', 'pdf']);
@@ -81,10 +87,6 @@ class KasController extends BaseController
             $saldoBaru -= $newJumlah;
         }
 
-        if ($saldoBaru < 0) {
-            return redirect()->back()->with('error', 'Saldo tidak cukup untuk perubahan ini');
-        }
-
         // Update transaksi
         $this->transaksiModel->where('kode_kas', $kode_kas)->set([
             'kategori' => $newKategori,
@@ -123,6 +125,78 @@ class KasController extends BaseController
         }
 
         return redirect()->back()->with('success', 'Data berhasil dihapus');
+    }
+
+    public function index()
+    {
+        // Ambil bulan dan tahun dari query parameter, default ke bulan/tahun saat ini atau kosong
+        $bulan = $this->request->getVar('bulan') ?? date('m'); // Default ke bulan saat ini
+        $tahun = $this->request->getVar('tahun') ?? date('Y'); // Default ke tahun saat ini
+
+        $kasPemasukan = $this->kasModel->getKasPemasukanFiltered($bulan, $tahun);
+
+        $data = [
+            'title' => 'Pemasukan Kas',
+            'kas_pemasukan' => $kasPemasukan,
+            'kategori' => $this->kategoriModel->findAll(), // Asumsi Anda punya model Kategori
+            'current_bulan' => $bulan, // Kirim bulan dan tahun terpilih ke view
+            'current_tahun' => $tahun,
+        ];
+        return view('kas/pemasukan_view', $data);
+    }
+
+    public function filterData()
+    {
+        $bulan = $this->request->getVar('bulan');
+        $tahun = $this->request->getVar('tahun');
+
+        $kasData = $this->kasModel->getKasPemasukanFiltered($bulan, $tahun);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'data' => $kasData,
+        ]);
+    }
+
+    public function deleteAllTransaksi($jenis) // Menerima parameter jenis
+    {
+        // Pastikan jenis yang diterima valid
+        if (!in_array($jenis, ['pemasukan', 'pengeluaran'])) {
+            return redirect()->back()->with('error', 'Jenis transaksi tidak valid.');
+        }
+
+        // Ambil semua transaksi berdasarkan jenis
+        $transaksiToDelete = $this->transaksiModel->where('jenis', $jenis)->findAll();
+
+        if (empty($transaksiToDelete)) {
+            return redirect()->back()->with('error', 'Tidak ada data transaksi ' . $jenis . ' yang ditemukan.');
+        }
+
+        // Hitung total jumlah untuk penyesuaian uang kas
+        $totalJumlah = 0;
+        foreach ($transaksiToDelete as $transaksi) {
+            $totalJumlah += $transaksi['jumlah'];
+        }
+
+        // Ambil jumlah uang kas saat ini
+        $uangKasSaatIni = $this->uangModel->first()['jumlah'];
+
+        if ($jenis == 'pemasukan') {
+            // Kurangi uang kas dengan total pemasukan yang dihapus
+            $this->uangModel->update(1, [
+                'jumlah' => $uangKasSaatIni - $totalJumlah
+            ]);
+        } elseif ($jenis == 'pengeluaran') {
+            // Tambahkan uang kas dengan total pengeluaran yang dihapus
+            $this->uangModel->update(1, [
+                'jumlah' => $uangKasSaatIni + $totalJumlah
+            ]);
+        }
+
+        // Hapus semua transaksi berdasarkan jenis
+        $this->transaksiModel->where('jenis', $jenis)->delete();
+
+        return redirect()->back()->with('success', 'Semua data kas ' . $jenis . ' berhasil dihapus.');
     }
 
 
@@ -220,10 +294,6 @@ class KasController extends BaseController
         $saldoSekarang = (int) ($uang['jumlah'] ?? 0);
         $saldoBaru = $saldoSekarang - $jumlah;
 
-        if ($saldoBaru < 0) {
-            return $this->response->setStatusCode(400)->setJSON(['message' => 'Saldo tidak cukup']);
-        }
-
         // Simpan transaksi sebagai pengeluaran
         $this->transaksiModel->insert([
             'kode_kas' => strtoupper(bin2hex(random_bytes(4))),
@@ -278,7 +348,10 @@ class KasController extends BaseController
             'helper_text' => helper('text'),
             'breadcrumbs' => $this->request->getUri()->getSegments(),
             'posts' => $this->postModel->get_all_post()->getResultArray(),
-            'kas_pemasukan' => $this->transaksiModel->where('jenis', 'pemasukan')->findAll(),
+            'kas_pemasukan' => $this->transaksiModel->select('tbl_transaksi_kas.*, tbl_user.user_name')
+            ->join('tbl_user', 'tbl_transaksi_kas.user_id = tbl_user.user_id')
+            ->where('jenis', 'pemasukan')
+            ->findAll(),
             'kategori' => $this->kategoriModel->findAll(),
         ];
 
@@ -299,7 +372,10 @@ class KasController extends BaseController
             'helper_text' => helper('text'),
             'breadcrumbs' => $this->request->getUri()->getSegments(),
             'posts' => $this->postModel->get_all_post()->getResultArray(),
-            'kas_pengeluaran' => $this->transaksiModel->where('jenis', 'pengeluaran')->findAll(),
+            'kas_pengeluaran' => $this->transaksiModel->select('tbl_transaksi_kas.*, tbl_user.user_name')
+            ->join('tbl_user', 'tbl_transaksi_kas.user_id = tbl_user.user_id')
+            ->where('jenis', 'pengeluaran')
+            ->findAll(),
             'kategori' => $this->kategoriModel->findAll(),
         ];
 
@@ -326,7 +402,7 @@ class KasController extends BaseController
 
         foreach ($semuaTransaksi as $t) {
             $jumlah = intval($t['jumlah']);
-            if ($t['jenis'] == 'pemasukan') {
+            if ($t['jenis'] == 'pengeluaran') {
                 $totalPemasukan += $jumlah;
                 // Kategori chart pie
                 if (!isset($kategoriPemasukan[$t['kategori']])) {
@@ -503,29 +579,42 @@ class KasController extends BaseController
         generate_pdf($html, 'Laporan_Kas_Lengkap_' . date('Ymd_His') . '.pdf');
     }
 
-    public function getCSV() // Atau public function getCSV()
+    public function getCSV()
     {
         // 1. Ambil semua data transaksi (tetap ASC untuk urutan kronologis)
         $semuaTransaksi = $this->transaksiModel->orderBy('tanggal', 'ASC')->findAll();
+
+        // Pisahkan data Pemasukan dan Pengeluaran
+        $dataPemasukan = array_filter($semuaTransaksi, function ($t) {
+            return $t['jenis'] == 'pemasukan';
+        });
+        $dataPengeluaran = array_filter($semuaTransaksi, function ($t) {
+            return $t['jenis'] == 'pengeluaran';
+        });
 
         // 2. Ambil uang kas saat ini (nilai final dari database, sekali saja)
         $uangKasDB = $this->uangModel->first();
         $jumlahKasFinal = $uangKasDB ? intval($uangKasDB['jumlah']) : 0;
 
-        // 3. Siapkan header CSV (baris pertama)
-        $header = [
+        // 3. Siapkan header CSV
+        // Kolom 'Kategori' diubah menjadi 'Anggota'
+        $headerPemasukan = [
             'No',
             'Tanggal',
             'Hari',
-            'Kategori',
+            'Anggota', // Diubah dari 'Kategori'
             'Jumlah',
-            'Jenis',
-            'Keterangan',
         ];
 
-        // 4. Siapkan data CSV
-        $data_csv = [];
-        $data_csv[] = $header; // Tambahkan header sebagai baris pertama
+        // Header untuk pengeluaran tetap 'Kategori' jika memang itu yang diinginkan
+        $headerPengeluaran = [
+            'No',
+            'Tanggal',
+            'Hari',
+            'Kategori', // Tetap 'Kategori' untuk pengeluaran
+            'Jumlah',
+        ];
+
 
         $namaHari = [
             'Sun' => 'Minggu', 'Mon' => 'Senin', 'Tue' => 'Selasa',
@@ -533,39 +622,62 @@ class KasController extends BaseController
             'Sat' => 'Sabtu'
         ];
 
+        // 4. Siapkan data CSV
+        $data_csv = [];
+
+        // --- Bagian Pemasukan ---
+        $data_csv[] = ['LAPORAN KAS PEMASUKAN']; // Judul tabel pemasukan
+        $data_csv[] = $headerPemasukan; // Header untuk pemasukan menggunakan $headerPemasukan
+
         $no = 1;
-        foreach ($semuaTransaksi as $t) {
+        $totalPemasukan = 0;
+        foreach ($dataPemasukan as $t) {
             $tanggalObj = strtotime($t['tanggal']);
             $hariSingkat = date('D', $tanggalObj);
-            $hariLengkap = $namaHari[$hariSingkat]; // Ambil nama hari dalam Bahasa Indonesia
+            $hariLengkap = $namaHari[$hariSingkat];
 
             $row = [
                 $no++,
                 date('d-m-Y', $tanggalObj),
                 $hariLengkap,
-                ucfirst($t['kategori']),
-                intval($t['jumlah']), // Biarkan sebagai angka
-                ucfirst($t['jenis']),
-                $t['keterangan'] ?? '-',
+                ucfirst($t['kategori']), // Data dari DB tetap kategori, hanya judul kolomnya saja yang berubah
+                intval($t['jumlah']),
             ];
             $data_csv[] = $row;
+            $totalPemasukan += intval($t['jumlah']);
         }
+        $data_csv[] = ['', '', '', 'TOTAL PEMASUKAN', $totalPemasukan];
+        $data_csv[] = []; // Baris kosong sebagai pemisah
 
-        // Opsional: Tambahkan baris ringkasan di akhir CSV (seperti di PDF)
-        // Ini akan sangat membantu user saat membuka di spreadsheet
-        $totalPemasukan = 0;
+        // --- Bagian Pengeluaran ---
+        $data_csv[] = ['LAPORAN KAS PENGELUARAN']; // Judul tabel pengeluaran
+        $data_csv[] = $headerPengeluaran; // Header untuk pengeluaran menggunakan $headerPengeluaran
+
+        $no = 1;
         $totalPengeluaran = 0;
-        foreach ($semuaTransaksi as $t) {
-            if ($t['jenis'] == 'pemasukan') {
-                $totalPemasukan += intval($t['jumlah']);
-            } else {
-                $totalPengeluaran += intval($t['jumlah']);
-            }
-        }
+        foreach ($dataPengeluaran as $t) {
+            $tanggalObj = strtotime($t['tanggal']);
+            $hariSingkat = date('D', $tanggalObj);
+            $hariLengkap = $namaHari[$hariSingkat];
 
-        $data_csv[] = ['', '', '', 'TOTAL PEMASUKAN', $totalPemasukan, '', '', ''];
-        $data_csv[] = ['', '', '', 'TOTAL PENGELUARAN', $totalPengeluaran, '', '', ''];
-        $data_csv[] = ['', '', '', 'SALDO AKHIR', $jumlahKasFinal, '', '', ''];
+            $row = [
+                $no++,
+                date('d-m-Y', $tanggalObj),
+                $hariLengkap,
+                ucfirst($t['kategori']), // Data dari DB tetap kategori
+                intval($t['jumlah']),
+            ];
+            $data_csv[] = $row;
+            $totalPengeluaran += intval($t['jumlah']);
+        }
+        $data_csv[] = ['', '', '', 'TOTAL PENGELUARAN', $totalPengeluaran];
+        $data_csv[] = []; // Baris kosong sebagai pemisah
+
+        // --- Ringkasan Akhir ---
+        $data_csv[] = ['RINGKASAN KAS'];
+        $data_csv[] = ['Total Pemasukan', $totalPemasukan];
+        $data_csv[] = ['Total Pengeluaran', $totalPengeluaran];
+        $data_csv[] = ['SALDO AKHIR', $jumlahKasFinal];
 
 
         // 5. Siapkan header HTTP untuk unduhan CSV
@@ -575,6 +687,9 @@ class KasController extends BaseController
 
         // 6. Buat output CSV
         $output = fopen('php://output', 'w'); // Buka output stream
+
+        // Tulis UTF-8 BOM untuk kompatibilitas Excel
+        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
         foreach ($data_csv as $row) {
             fputcsv($output, $row); // Tulis setiap baris ke CSV

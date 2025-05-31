@@ -38,11 +38,11 @@
         <p>Total Pengeluaran Keseluruhan: <span class="total-pengeluaran">Rp <?= number_format($total_pengeluaran_keseluruhan, 0, ',', '.'); ?></span></p>
     </div>
 
-    <h2>Pemasukan Berdasarkan Kategori</h2>
+    <h2>Pemasukan Berdasarkan Anggota</h2>
     <table>
         <thead>
             <tr>
-                <th>Kategori</th>
+                <th>Anggota</th>
                 <th>Jumlah (Rp)</th>
             </tr>
         </thead>
@@ -92,10 +92,9 @@
             <tr>
                 <th>No</th>
                 <th>Tanggal</th>
-                <th>Kategori</th>
+                <th>Kategori/Anggota</th>
                 <th>Jumlah</th>
                 <th>Jenis</th>
-                <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
@@ -108,7 +107,6 @@
                         <td><?= ucfirst($t['kategori']); ?></td>
                         <td>Rp <?= number_format($t['jumlah'], 0, ',', '.'); ?></td>
                         <td><?= ucfirst($t['jenis']); ?></td>
-                        <td><?= $t['keterangan'] ?? '-'; ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>

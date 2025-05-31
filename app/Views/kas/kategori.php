@@ -6,7 +6,7 @@
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <title><?= esc($title) ?></title>
 
-    <meta name="description" content="Halaman manajemen kategori transaksi." />
+    <meta name="description" content="Halaman manajemen Anggota transaksi." />
     <meta name="keywords" content="kategori, transaksi, keuangan, dashboard" />
     <meta name="author" content="Your Name/Ircham Ali" />
     <link rel="shortcut icon" href="/assets/frontend/img/apple-touch-icon.png" />
@@ -87,7 +87,7 @@
                 <div class="container-fluid">
                     <div class="row justify-content-center">
                         <div class="col-md-12 col-lg-12 panel-white">
-                            <h2 class="text-center mb-4">Kategori Transaksi</h2>
+                            <h2 class="text-center mb-4"> Daftar Anggota</h2>
 
                             <?php if (session()->getFlashdata('success')) : ?>
                                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -117,7 +117,7 @@
                                     <thead class="thead-dark">
                                         <tr>
                                             <th style="width: 5%;">No</th>
-                                            <th>Kategori</th>
+                                            <th>Anggota</th>
                                             <th style="width: 20%;">Aksi</th>
                                         </tr>
                                     </thead>
@@ -127,23 +127,27 @@
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= esc($k['nama_kategori']) ?></td>
-                                                <td>
-                                                    <button
-                                                        class="btn btn-warning btn-sm btn-edit"
-                                                        data-id="<?= $k['id'] ?>"
-                                                        data-nama="<?= esc($k['nama_kategori']) ?>"
-                                                        data-toggle="modal"
-                                                        data-target="#editModal"
-                                                        title="Edit Kategori">
-                                                        <i class="fa fa-pencil"></i> Edit
-                                                    </button>
-                                                    <a href="<?= site_url('kas/kategori/delete/' . $k['id']) ?>"
-                                                       class="btn btn-danger btn-sm"
-                                                       onclick="return confirm('Yakin ingin menghapus kategori ini?')"
-                                                       title="Hapus Kategori">
-                                                        <i class="fa fa-trash"></i> Hapus
+                                                <td style="text-align: center;">
+                                                    <a href="#" 
+                                                    class="btn btn-xs btn-edit" 
+                                                    data-id="<?= $k['id'] ?>" 
+                                                    data-nama="<?= esc($k['nama_kategori']) ?>" 
+                                                    data-toggle="modal" 
+                                                    data-target="#editModal" 
+                                                    title="Edit Anggota"
+                                                    style="background: transparent; border: none; padding: 0 5px;">
+                                                        <span class="fa fa-pencil"></span>
+                                                    </a>
+
+                                                    <a href="<?= site_url('kas/kategori/delete/' . $k['id']) ?>" 
+                                                    class="btn btn-xs btn-delete" 
+                                                    onclick="return confirm('Yakin ingin menghapus kategori ini?')" 
+                                                    title="Hapus Anggota"
+                                                    style="background: transparent; border: none; padding: 0 5px;">
+                                                        <span class="fa fa-trash"></span>
                                                     </a>
                                                 </td>
+
                                             </tr>
                                         <?php endforeach ?>
                                     </tbody>
@@ -157,14 +161,14 @@
                 <input type="hidden" name="id" id="editId">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="editModalLabel">Edit Kategori</h5>
+                        <h5 class="modal-title" id="editModalLabel">Edit Anggota</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         <div class="form-group">
-                            <label for="editNama">Nama Kategori</label>
+                            <label for="editNama">Nama Anggota</label>
                             <input type="text" name="nama_kategori" id="editNama" class="form-control" required>
                         </div>
                     </div>

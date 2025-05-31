@@ -2,7 +2,6 @@
 <html>
 
 <head>
-    <!-- Title -->
     <title><?= $title; ?></title>
     <meta content="width=device-width, initial-scale=1" name="viewport" />
     <meta charset="UTF-8">
@@ -11,7 +10,6 @@
     <meta name="author" content="Ircham Ali" />
     <link rel="shortcut icon" href="/assets/frontend/img/apple-touch-icon.png">
 
-    <!-- Styles -->
     <link href="/assets/backend/plugins/pace-master/themes/blue/pace-theme-flash.css" rel="stylesheet" />
     <link href="/assets/backend/plugins/uniform/css/uniform.default.min.css" rel="stylesheet" />
     <link href="/assets/backend/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
@@ -26,7 +24,6 @@
     <link href="/assets/backend/plugins/metrojs/MetroJs.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/backend/plugins/toastr/toastr.min.css" rel="stylesheet" type="text/css" />
 
-    <!-- Theme Styles -->
     <link href="/assets/backend/css/modern.min.css" rel="stylesheet" type="text/css" />
     <link href="/assets/backend/css/themes/dark.css" class="theme-color" rel="stylesheet" type="text/css" />
     <link href="/assets/backend/css/custom.css" rel="stylesheet" type="text/css" />
@@ -43,7 +40,6 @@
         <div class="page-inner">
             <?= $this->include('layout/title-dashboard'); ?>
 
-            <!-- Main Content -->
             <div id="main-wrapper">
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
@@ -122,8 +118,7 @@
                             </div>
                         </div>
                     </div>
-                </div><!-- Row -->
-                <div class="row">
+                </div><div class="row">
                     <div class="col-lg-12 col-md-12">
                         <div class="panel panel-white">
                             <div class="row">
@@ -133,7 +128,7 @@
                                             <h4 class="panel-title">Visitors This Month</h4>
                                         </div>
                                         <div class="panel-body">
-                                            <div class="col-md-12">
+                                            <div class="col-md-18" style="height: 300px;">
                                                 <canvas id="canvas"></canvas>
                                             </div>
                                         </div>
@@ -207,22 +202,20 @@
                             <div class="panel-body">
                                 <div class="row">
 
-                                    <!-- Uang Kas -->
                                     <div class="col-md-4">
                                         <div class="info-box info-box-success">
                                             <div class="panel-body">
                                                 <div class="info-box-stats">
-                                                    <p class="counter"><?= number_format($uang_kas['jumlah']); ?></p>
+                                                    <p><?= number_format($uang_kas['jumlah']); ?></p>
                                                     <span class="info-box-title">Uang Kas Saat Ini</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- 3 Pemasukan Terakhir -->
                                     <div class="col-md-4">
                                         <div class="info-box-icon">
-                                                <i class="icon-arrow-up text-success"></i>
+                                            <i class="icon-arrow-up text-success"></i>
                                         </div>
                                         <h5><strong>Pemasukan Terakhir</strong></h5>
                                         <ul class="list-unstyled">
@@ -232,10 +225,9 @@
                                         </ul>
                                     </div>
 
-                                    <!-- 3 Pengeluaran Terakhir -->
                                     <div class="col-md-4">
                                         <div class="info-box-icon">
-                                                <i class="icon-arrow-down text-danger"></i>
+                                            <i class="icon-arrow-down text-danger"></i>
                                         </div>
                                         <h5><strong>Pengeluaran Terakhir</strong></h5>
                                         <ul class="list-unstyled">
@@ -250,11 +242,12 @@
                                     </div>
                                 </div>
 
-                                <!-- Chart -->
-                                <div class="row" style="margin-top:30px;">
-                                    <div class="col-md-12">
+                                <div class="row" style="margin-top:30px; display: flex;">
+                                    <div class="col-md-6">
                                         <h5><strong>Perbandingan Pemasukan vs Pengeluaran</strong></h5>
-                                        <canvas id="chartKas"></canvas>
+                                        <div class="card-body">
+                                            <canvas id="chart-perbandingan" height="200"></canvas>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -262,8 +255,6 @@
                     </div>
                 </div>
             </div>
-            <!-- End Main Content -->
-
             <div class="page-footer">
                 <p class="no-s"><?= date('Y'); ?> &copy; Powered by Ircham Ali.</p>
             </div>
@@ -271,7 +262,7 @@
     </main>
     <div class="cd-overlay"></div>
 
-    <!-- Javascripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/assets/backend/plugins/jquery/jquery-2.1.4.min.js"></script>
     <script src="/assets/backend/plugins/jquery-ui/jquery-ui.min.js"></script>
     <script src="/assets/backend/plugins/pace-master/pace.min.js"></script>
@@ -280,147 +271,127 @@
     <script src="/assets/backend/plugins/jquery-slimscroll/jquery.slimscroll.min.js"></script>
     <script src="/assets/backend/plugins/switchery/switchery.min.js"></script>
     <script src="/assets/backend/plugins/uniform/jquery.uniform.min.js"></script>
-    <script src="/assets/backend/plugins/offcanvasmenueffects/js/classie.js"></script>
-    <script src="/assets/backend/plugins/offcanvasmenueffects/js/main.js"></script>
-    <script src="/assets/backend/plugins/waves/waves.min.js"></script>
+    <script src="/assets/backend/plugins/classie/classie.js"></script>
     <script src="/assets/backend/plugins/3d-bold-navigation/js/main.js"></script>
+    <script src="/assets/backend/plugins/waves/waves.min.js"></script>
     <script src="/assets/backend/plugins/waypoints/jquery.waypoints.min.js"></script>
     <script src="/assets/backend/plugins/jquery-counterup/jquery.counterup.min.js"></script>
-    <script src="/assets/backend/plugins/toastr/toastr.min.js"></script>
+    <script src="/assets/backend/plugins/toastr/jquery.toast.min.js"></script>
+    <script src="/assets/backend/plugins/datatables/js/jquery.datatables.min.js"></script>
+    <script src="/assets/backend/plugins/offcanvasmenueffects/js/main.js"></script>
     <script src="/assets/backend/plugins/flot/jquery.flot.min.js"></script>
     <script src="/assets/backend/plugins/flot/jquery.flot.time.min.js"></script>
     <script src="/assets/backend/plugins/flot/jquery.flot.symbol.min.js"></script>
     <script src="/assets/backend/plugins/flot/jquery.flot.resize.min.js"></script>
     <script src="/assets/backend/plugins/flot/jquery.flot.tooltip.min.js"></script>
-    <script src="/assets/backend/plugins/chartsjs/Chart.min.js"></script>
-    <script src="/assets/backend/js/modern.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/assets/backend/js/modern.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-    const labels = <?= json_encode($chart_labels); ?>;
-    // Karena cuma 2 data, buat satu dataset saja
-    const data = <?= json_encode([$total_pemasukan, $total_pengeluaran]); ?>;
-
-    const ctx = document.getElementById('chartKas').getContext('2d');
-    const chartKas = new Chart(ctx, {
-        type: 'bar',
-        data: {
-        labels: labels,
-        datasets: [{
-            label: 'Jumlah (Rp)',
-            data: data,
-            backgroundColor: [
-            'rgba(54, 162, 235, 0.7)', // biru pemasukan
-            'rgba(255, 99, 132, 0.7)'  // merah pengeluaran
-            ],
-            borderColor: [
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 99, 132, 1)'
-            ],
-            borderWidth: 1
-        }]
-        },
-        options: {
-        scales: {
-            y: {
-            beginAtZero: true,
-            ticks: {
-                callback: value => value.toLocaleString()
-            }
-            }
-        },
-        plugins: {
-            legend: { display: false },
-            tooltip: {
-            callbacks: {
-                label: ctx => 'Rp ' + ctx.parsed.y.toLocaleString()
-            }
-            }
-        }
-        }
-    });
-    </script>
-
-    <script>
-        $(document).one('appear',function() {
+        $(document).ready(function() {
             // CounterUp Plugin
             $('.counter').counterUp({
                 delay: 10,
                 time: 1000
             });
 
+            // Chart Perbandingan Pemasukan vs Pengeluaran
+            const labelsPerbandingan = ['Pemasukan', 'Pengeluaran']; // Ganti chart_labels jika hanya 2 data ini
+            const dataPerbandingan = [<?= $total_pemasukan; ?>, <?= $total_pengeluaran; ?>];
 
-            var myLine = document.getElementById("canvas").getContext("2d");
-            var lineChartData = {
-                labels: <?= $month; ?>,
-                datasets: [
-
-                    {
-                        fillColor: "rgba(34,186,160,0.2)",
-                        strokeColor: "rgba(34,186,160,1)",
-                        pointColor: "rgba(34,186,160,1)",
-                        pointStrokeColor: "#fff",
-                        pointHighlightFill: "#fff",
-                        pointHighlightStroke: "rgba(18,175,203,1)",
-                        data: <?= $value; ?>
-                    }
-
-                ]
-
-            }
-
-            var canvas = new Chart(myLine).Line(lineChartData, {
-                scaleShowGridLines: true,
-                scaleGridLineColor: "rgba(0,0,0,.05)",
-                scaleGridLineWidth: 0,
-                scaleShowHorizontalLines: true,
-                scaleShowVerticalLines: true,
-                bezierCurve: true,
-                bezierCurveTension: 0.4,
-                pointDot: true,
-                pointDotRadius: 4,
-                pointDotStrokeWidth: 1,
-                pointHitDetectionRadius: 2,
-                datasetStroke: true,
-                tooltipCornerRadius: 2,
-                datasetStrokeWidth: 2,
-                datasetFill: true,
-                legendTemplate: "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>",
-                responsive: true
-            });
-        });
-    </script>
-    <script>
-        $(document).ready(function() {
-            var ctx = document.getElementById('chartKas').getContext('2d');
-            var chartKas = new Chart(ctx, {
+            const ctxPerbandingan = document.getElementById('chart-perbandingan').getContext('2d');
+            new Chart(ctxPerbandingan, {
                 type: 'bar',
                 data: {
-                    labels: <?= json_encode($chart_labels); ?>,
+                    labels: labelsPerbandingan,
                     datasets: [{
-                        label: 'Pemasukan',
-                        data: <?= json_encode($chart_pemasukan); ?>,
-                        backgroundColor: 'rgba(34,186,160,0.5)',
-                    }, {
-                        label: 'Pengeluaran',
-                        data: <?= json_encode($chart_pengeluaran); ?>,
-                        backgroundColor: 'rgba(255,99,132,0.5)',
+                        label: 'Jumlah (Rp)',
+                        data: dataPerbandingan,
+                        backgroundColor: ['#A8D5BA', '#F5A9A9']
                     }]
                 },
                 options: {
+                    responsive: true,
                     scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
+                        y: {
+                            beginAtZero: true
+                        }
                     }
                 }
             });
+
+            // Chart Visitors This Month
+            var ctxVisitors = document.getElementById("canvas").getContext("2d");
+            new Chart(ctxVisitors, {
+                type: 'line', // Tipe chart sebagai 'line'
+                data: {
+                    labels: <?= $month; ?>, // Pastikan $month adalah array JSON valid dari PHP
+                    datasets: [
+                        {
+                            label: 'Jumlah Pengunjung', // Label untuk dataset
+                            backgroundColor: "rgba(34,186,160,0.2)", // Isi area di bawah garis
+                            borderColor: "rgba(34,186,160,1)", // Warna garis
+                            pointBackgroundColor: "rgba(34,186,160,1)", // Warna titik
+                            pointBorderColor: "#fff", // Warna border titik
+                            pointHoverBackgroundColor: "#fff",
+                            pointHoverBorderColor: "rgba(18,175,203,1)",
+                            data: <?= $value; ?>, // Pastikan $value adalah array JSON valid dari PHP
+                            fill: true // Area di bawah garis terisi
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false, // Memungkinkan kontrol rasio aspek
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        },
+                        x: { // Tambahkan skala X jika belum ada, untuk memastikan label bulan tampil
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            enabled: true
+                        },
+                        legend: { // Menampilkan legend
+                            display: true
+                        }
+                    }
+                }
+            });
+
+            // Kode untuk chartKas yang mungkin Anda miliki, pastikan elemen <canvas id="chartKas"></canvas> ada jika ingin menggunakannya
+            // if (document.getElementById('chartKas')) {
+            //     var ctxKas = document.getElementById('chartKas').getContext('2d');
+            //     var chartKas = new Chart(ctxKas, {
+            //         type: 'bar',
+            //         data: {
+            //             labels: <?= json_encode($chart_labels); ?>, // Perhatikan variabel ini, apakah sudah terdefinisi di PHP
+            //             datasets: [{
+            //                 label: 'Pemasukan',
+            //                 data: <?= json_encode($chart_pemasukan); ?>, // Perhatikan variabel ini
+            //                 backgroundColor: 'rgba(34,186,160,0.5)',
+            //             }, {
+            //                 label: 'Pengeluaran',
+            //                 data: <?= json_encode($chart_pengeluaran); ?>, // Perhatikan variabel ini
+            //                 backgroundColor: 'rgba(255,99,132,0.5)',
+            //             }]
+            //         },
+            //         options: {
+            //             scales: {
+            //                 y: {
+            //                     beginAtZero: true
+            //                 }
+            //             }
+            //         }
+            //     });
+            // }
+
         });
-    
-    
-    <script>
     </script>
 </body>
 

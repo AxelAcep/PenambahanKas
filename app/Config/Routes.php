@@ -241,10 +241,12 @@ $routes->group('kas', ['filter' => 'authcombined'], function($routes) {
     $routes->post('kurang/data', 'Kas\KasController::kurangKas');
 
     $routes->post('pemasukan/edit/(:segment)', 'Kas\KasController::editKas/$1');
-    $routes->get('pemasukan/delete/(:segment)', 'Kas\KasController::deleteKas/$1');
+    $routes->post('pemasukan/delete/(:segment)', 'Kas\KasController::deleteKas/$1');
+    $routes->post('pemasukan/deleteAll', 'Kas\KasController::deleteAllTransaksi/pemasukan');
 
     $routes->post('pengeluaran/edit/(:segment)', 'Kas\KasController::editKas/$1');
-    $routes->get('pengeluaran/delete/(:segment)', 'Kas\KasController::deleteKas/$1');
+    $routes->post('pengeluaran/delete/(:segment)', 'Kas\KasController::deleteKas/$1');
+    $routes->post('pengeluaran/deleteAll', 'Kas\KasController::deleteAllTransaksi/pengeluaran');
 
     $routes->get('kategori', 'Kas\KasController::viewKategori');
     $routes->post('kategori/tambah', 'Kas\KasController::simpanKategori');
