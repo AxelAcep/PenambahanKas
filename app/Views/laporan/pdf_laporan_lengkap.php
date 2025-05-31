@@ -38,7 +38,7 @@
         <p>Total Pengeluaran Keseluruhan: <span class="total-pengeluaran">Rp <?= number_format($total_pengeluaran_keseluruhan, 0, ',', '.'); ?></span></p>
     </div>
 
-    <h2>Pemasukan Berdasarkan Anggota</h2>
+    <h2>Pemasukan Kas</h2>
     <table>
         <thead>
             <tr>
@@ -56,17 +56,17 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="2" style="text-align: center;">Tidak ada data pemasukan berdasarkan kategori.</td>
+                    <td colspan="2" style="text-align: center;">Tidak ada data pemasukan.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
     </table>
 
-    <h2>Pengeluaran Berdasarkan Kategori</h2>
+    <h2>Pengeluaran Kas</h2>
     <table>
         <thead>
             <tr>
-                <th>Kategori</th>
+                <th>Keterangan</th>
                 <th>Jumlah (Rp)</th>
             </tr>
         </thead>
@@ -80,7 +80,7 @@
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="2" style="text-align: center;">Tidak ada data pengeluaran berdasarkan kategori.</td>
+                    <td colspan="2" style="text-align: center;">Tidak ada data pengeluaran.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

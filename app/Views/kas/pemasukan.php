@@ -121,10 +121,10 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="body-table">
-                                                <?php if (!empty($kas_pemasukan)): ?>
+                                                <?php $no = 1; ?> <?php if (!empty($kas_pemasukan)): ?>
                                                     <?php foreach ($kas_pemasukan as $kas): ?>
                                                         <tr>
-                                                            <td><?= $kas['kode_kas']; ?></td>
+                                                            <td><?= $no++; ?></td>
                                                             <td><?= $kas['kategori']; ?></td>
                                                             <td><?= number_format($kas['jumlah']); ?></td>
                                                             <td><?= date('d-m-Y', strtotime($kas['tanggal'])); ?></td>
@@ -293,7 +293,9 @@
                         "previous": "Sebelumnya",
                         "next": "Berikutnya"
                     }
-                }
+                } "error": function(xhr, error, thrown) {
+            console.log('DataTables error:', error, thrown);
+        }
             });
 
             // Bagian ini dihapus/dikomentari karena tidak lagi menggunakan AJAX untuk tambah kas:

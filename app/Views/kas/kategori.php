@@ -152,7 +152,22 @@
                                         <?php endforeach ?>
                                     </tbody>
                                 </table>
-                            </div> </div> </div> </div></div></div></main>
+                            </div>
+
+                            <div class="mt-4 text-left" style="margin-top: 10px;">
+                                <form id="deleteAllForm" action="<?= site_url('kas/kategori/deleteAll') ?>" method="post" style="display: inline-block;">
+                                    <?= csrf_field() ?>
+                                    <button type="button" id="btnDeleteAll" class="btn btn-danger">
+                                        <i class="fa fa-trash"></i> Hapus Semua Kategori
+                                    </button>
+                                </form>
+                            </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -174,7 +189,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                        <button type="button" id="btnUbah" class="btn btn-primary">Ubah</button>
+                        <button type="submit" id="btnUbah" class="btn btn-primary">Ubah</button> 
                     </div>
                 </div>
             </form>
@@ -213,7 +228,6 @@
                 } else {
                     console.error("DataTables is not loaded. Check script order/paths.");
                 }
-
 
                 // 2) Populate modal when edit button is clicked
                 $('.btn-edit').on('click', function() { // Use .on() for better event handling
@@ -274,8 +288,28 @@
                     $('#editNama').val('');
                     console.log('Modal closed. Fields reset.');
                 });
+
+                // --- Penanganan Tombol "Hapus Semua" ---
+                $('#btnDeleteAll').on('click', function() {
+                    Swal.fire({
+                        title: 'Anda yakin?',
+                        text: "Semua kategori akan dihapus secara permanen! Tindakan ini tidak bisa dibatalkan.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, Hapus Semua!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#deleteAllForm').submit(); // Submit form jika dikonfirmasi
+                        }
+                    });
+                });
+                // --- Akhir Penanganan Tombol "Hapus Semua" ---
             });
         })(jQuery); // Pass jQuery object to the wrapper function
     </script>
 </body>
+
 </html>

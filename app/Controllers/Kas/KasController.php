@@ -517,6 +517,7 @@ class KasController extends BaseController
     public function getPDF()
     {
         // 1. Ekstrak data tanggal, waktu, hari, jam, saat ini
+        date_default_timezone_set('Asia/Jakarta');
         $now = date('d-m-Y H:i:s');
         $hariIni = date('l'); // Full day name (e.g., Monday)
         $jamSaatIni = date('H:i');
@@ -697,6 +698,30 @@ class KasController extends BaseController
 
         fclose($output); // Tutup output stream
         exit(); // Hentikan eksekusi script setelah mengirim file
+    }
+    
+    public function deleteAllKategori()
+    {
+        // Pastikan request adalah POST untuk keamanan
+        if ($this->request->getMethod() === 'post') {
+            try {
+                // Menggunakan truncate() untuk menghapus semua data di tabel kategori
+                $this->kategoriModel->truncate(); 
+                
+                // Atau, jika truncate() tidak tersedia atau ingin cara lain:
+                // $this->kategoriModel->emptyTable(); // Metode lain untuk menghapus semua baris
+                // Atau
+                // $this->kategoriModel->where('id >', 0)->delete(); // Menghapus semua baris dengan kondisi
+
+                return redirect()->back()->with('success', 'Semua kategori berhasil dihapus!');
+            } catch (\Exception $e) {
+                // Tangani kesalahan jika terjadi
+                return redirect()->back()->with('error', 'Gagal menghapus semua kategori: ' . $e->getMessage());
+            }
+        } else {
+            // Jika bukan POST request, arahkan kembali atau tampilkan error
+            return redirect()->back()->with('error', 'Metode request tidak diizinkan.');
+        }
     }
 
 

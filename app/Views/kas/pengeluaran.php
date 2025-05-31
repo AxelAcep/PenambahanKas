@@ -92,8 +92,8 @@
                                                 <label for="jumlah">Jumlah</label>
                                                 <input type="number" class="form-control" id="jumlah" name="jumlah" placeholder="Masukkan jumlah" required />
                                             </div>
-                                            <div class="col-md-2 form-group" style="margin-bottom: 15px; padding-left: 5px;">
-                                                <label for="kategori">Kategori</label>
+                                            <div class="col-md-3 form-group" style="margin-bottom: 15px; padding-left: 5px;">
+                                                <label for="kategori">Keterangan</label>
                                                 <input type="text" class="form-control" id="kategori" name="kategori" placeholder="Masukkan kategori" required>
                                             </div>
                                         </div>
@@ -106,7 +106,7 @@
                                             <thead>
                                                 <tr>
                                                     <th>Kode</th>
-                                                    <th>Kategori</th>
+                                                    <th>Keterangan</th>
                                                     <th>Jumlah</th>
                                                     <th>Tanggal</th>
                                                     <th>User</th>
@@ -161,7 +161,7 @@
                                                                 </div>
                                                                 <div class="modal-body">
                                                                     <div class="form-group">
-                                                                        <label>Kategori</label>
+                                                                        <label>Keterangan</label>
                                                                         <select name="kategori" class="form-control" required>
                                                                             <?php foreach ($kategori as $cat): ?>
                                                                                 <option value="<?= esc($cat['nama_kategori']); ?>"
@@ -286,7 +286,9 @@
                         "previous": "Sebelumnya",
                         "next": "Berikutnya"
                     }
-                }
+                } "error": function(xhr, error, thrown) {
+            console.log('DataTables error:', error, thrown);
+        }
             });
 
             // Bagian ini dihapus/dikomentari karena tidak lagi menggunakan AJAX untuk tambah kas:

@@ -252,6 +252,7 @@ $routes->group('kas', ['filter' => 'authcombined'], function($routes) {
     $routes->post('kategori/tambah', 'Kas\KasController::simpanKategori');
     $routes->post('kategori/editKategori', 'Kas\KasController::editKategori');
     $routes->get('kategori/delete/(:segment)', 'Kas\KasController::hapusKategori/$1');
+    $routes->post('kategori/deleteAll', 'Kas\KasController::deleteAllKategori');
 
     $routes->get('laporan/pdf', 'Kas\KasController::getPDF');
     $routes->get('laporan/csv', 'Kas\KasController::getCSV');

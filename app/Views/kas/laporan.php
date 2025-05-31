@@ -202,7 +202,7 @@
                 labels: ['Pemasukan', 'Pengeluaran'],
                 datasets: [{
                     label: 'Jumlah (Rp)',
-                    data: [<?= $total_pemasukan; ?>, <?= $total_pengeluaran; ?>],
+                    data: [<?= $total_pengeluaran; ?>, <?= $total_pemasukan; ?>],
                     backgroundColor: ['#A8D5BA', '#F5A9A9']
                 }]
             },
