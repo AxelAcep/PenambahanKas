@@ -108,7 +108,7 @@
 
                                 <div class="col-md-4">
                                     <div class="card border-success">
-                                        <div class="card-header">Pengeluaran Berdasarkan Kategori</div>
+                                        <div class="card-header">Pengeluaran Berdasarkan Keterangan</div>
                                         <div class="card-body">
                                             <canvas id="chart-kategori" height="200"></canvas>
                                         </div>
@@ -125,9 +125,9 @@
                                             <tr>
                                                 <th>No</th>
                                                 <th>Tanggal</th>
-                                                <th>Kategori</th>
+                                                <th>Anggota / Keterangan</th>
                                                 <th>Jumlah</th>
-                                                <th>Keterangan</th>
+                                                <th>Jenis</th>
                                             </tr>
                                         </thead>
                                             <tbody>
